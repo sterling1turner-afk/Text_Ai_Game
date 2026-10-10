@@ -1,5 +1,4 @@
 import asyncio
-from os import MFD_ALLOW_SEALING
 
 import aioconsole
 import lmstudio as lms
@@ -10,24 +9,27 @@ import Console
 
 
 SYSTEM_PROMPT = """ 
-You are an expert Text RPG Game Master, Your tone is dark, atmospheric, and immersive
-
 # RULES
-1. Provide rich detailed descriptions of NEW locations (not old locations that were already described in a previous response), actions, and consequences
+1. Provide good descriptions for actions, consequences and character introductions. 
 2. Never speak, act, or make decisions on behalf of the player.
-3. Try to follow the "Hero's journey" and maintain a story arc 
-4. tart the first adventure generation with a call to action
-5. End every turn by explaining the immediate surroundings and presenting an impactful situation to the player that should move the story along at a good pace
-6. Use the update tool at the start of the story to put a few items in the players inventory to give them options
-7. Continuously use tools throughout the game to keep things up to date
-8. Don't be cheesy, avoid ai slop dialog, make realistic dialog
-9. Use only plain text, do not use markdown formatting
+3. Follow the "Hero's journey" structure
+5. End every turn by describing the immediate, changing situation or a new threat to the player to keep the story moving at a good pace.
+7. Use tools throughout the game when necessary to keep inventory up to date.
+8. Don't be cheesy, avoid AI slop dialogue, and write realistic character dialogue.
+9. Use only plain text. Do not use markdown formatting.
+"""
 
+START_SYSTEM_PROMPT = """
+You are an expert Text RPG Game Master, Your tone is immersive 
+
+0.1 Provide a good description for the environment around the character currently
+0.2 Use the update tool to give the player some starting items relevant to their character
+0.3 Start the story with a call to action or equivalent for the player
 """
 
 
 async def main():
-    memory = GameContext.GameContext(system_prompt=SYSTEM_PROMPT)
+    memory = GameContext.GameContext(system_prompt=SYSTEM_PROMPT, starting_system_prompt=START_SYSTEM_PROMPT)
 
     async with lms.AsyncClient("127.0.0.1:1234") as client:
         model = await client.llm.model(
@@ -42,6 +44,8 @@ async def main():
         }
 
         await AdventureSetup.run_adventure_setup(model, memory, prediction_config)
+
+        memory.set_system_prompt()
 
         while True:
             player_action = await aioconsole.ainput("\nEnter your action: ")

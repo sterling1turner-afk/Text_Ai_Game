@@ -1,4 +1,5 @@
 import asyncio
+import sys
 
 import lmstudio as lms
 import msgspec
@@ -14,9 +15,11 @@ class Console:
     @staticmethod
     def handle_prediction_fragment(fragment: lms.LlmPredictionFragment):
         if fragment.reasoning_type == "reasoning":
-            pass
+            print(fragment.content, end="", file=sys.stderr)
+            ##pass
         elif fragment.reasoning_type == "reasoningEndTag":
-            pass
+            print()
+            ##pass
         else:
             print(fragment.content, end = "", flush=True)
             Console.currentInferenceResults += fragment.content
