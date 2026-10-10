@@ -3,9 +3,8 @@ import sys
 import aioconsole
 import lmstudio as lms
 
-from GameContext import GameContext
-
-## input string, output string
+import GameContext
+import Console
 
 def handle_prediction_fragment(fragment: lms.LlmPredictionFragment):
     if fragment.reasoning_type == "reasoning":
@@ -15,7 +14,7 @@ def handle_prediction_fragment(fragment: lms.LlmPredictionFragment):
     else:
         print(fragment.content, end="")
 
-async def run_adventure_setup(model: lms.AsyncLLM, memory: GameContext, config: lms.LlmPredictionConfigDict):
+async def run_adventure_setup(model: lms.AsyncLLM, memory: GameContext.GameContext, config: lms.LlmPredictionConfigDict):
     print("WELCOME TO YOUR TEXT RPG ADVENTURE")
 
     theme: str = await aioconsole.ainput("Enter your adventure theme: ")
@@ -27,10 +26,12 @@ async def run_adventure_setup(model: lms.AsyncLLM, memory: GameContext, config: 
 
     print("Generating adventure...\n")
 
-    full_response = ""
+    ##full_response = ""
 
-    async for fragment in await model.respond_stream(memory.get_chat_object(), config=config, on_prediction_fragment=handle_prediction_fragment):
-        full_response += fragment.content
-    print()
+    await Console.prompt_user(model, memory, config)
 
-    memory.add_assistant_response(full_response)
+    ## async for fragment in await model.respond_stream(memory.get_chat_object(), config=config, on_prediction_fragment=handle_prediction_fragment):
+    ##    full_response += fragment.content
+    ## print()
+
+    ##memory.add_assistant_response(full_response)
