@@ -6,14 +6,6 @@ import lmstudio as lms
 import GameContext
 import Console
 
-def handle_prediction_fragment(fragment: lms.LlmPredictionFragment):
-    if fragment.reasoning_type == "reasoning":
-        print(fragment.content, end="", file=sys.stderr)
-    elif fragment.reasoning_type == "reasoningEndTag":
-        print()
-    else:
-        print(fragment.content, end="")
-
 async def run_adventure_setup(model: lms.AsyncLLM, memory: GameContext.GameContext, config: lms.LlmPredictionConfigDict):
     print("WELCOME TO YOUR TEXT RPG ADVENTURE")
 
@@ -26,12 +18,4 @@ async def run_adventure_setup(model: lms.AsyncLLM, memory: GameContext.GameConte
 
     print("Generating adventure...\n")
 
-    ##full_response = ""
-
     await Console.Console.launch_inference(model, memory, config)
-
-    ## async for fragment in await model.respond_stream(memory.get_chat_object(), config=config, on_prediction_fragment=handle_prediction_fragment):
-    ##    full_response += fragment.content
-    ## print()
-
-    ##memory.add_assistant_response(full_response)
