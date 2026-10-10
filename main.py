@@ -1,6 +1,7 @@
 import asyncio
 
 import lmstudio as lms
+import aioconsole
 
 SYSTEM_PROMPT = """ 
 You are an expert Text RPG Game Master, Your tone is dark, atmospheric, and immersive
@@ -10,8 +11,6 @@ You are an expert Text RPG Game Master, Your tone is dark, atmospheric, and imme
 2. Never speak, act, or make decisions on behalf of the player.
 3. End every turn by explaining the immediate surroundings and presenting a situation for the player
 """
-
-import aioconsole
 
 async def main():
     async with lms.AsyncClient("127.0.0.1:1234") as client:
