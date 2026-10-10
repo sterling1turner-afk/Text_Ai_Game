@@ -6,32 +6,23 @@ import lmstudio as lms
 import GameContext
 import Console
 
-def handle_prediction_fragment(fragment: lms.LlmPredictionFragment):
-    if fragment.reasoning_type == "reasoning":
-        print(fragment.content, end="", file=sys.stderr)
-    elif fragment.reasoning_type == "reasoningEndTag":
-        print()
-    else:
-        print(fragment.content, end="")
-
 async def run_adventure_setup(model: lms.AsyncLLM, memory: GameContext.GameContext, config: lms.LlmPredictionConfigDict):
     print("WELCOME TO YOUR TEXT RPG ADVENTURE")
 
     theme: str = await aioconsole.ainput("Enter your adventure theme: ")
+    character: str = await aioconsole.ainput("Describe your character?: ")
+    objective: str = await aioconsole.ainput("What is your character's objective?: ")
 
-    memory.set_adventure_theme(theme)
+    memory.set_adventure_context(theme, character, objective)
 
-    start_prompt = f"Begin the adventure based on the chosen theme: {theme}"
+    start_prompt = (
+        f"Begin the adventure based on the chosen theme: {theme}"
+        f"The player character is: {character}"
+        f"Their objective is: {objective}"
+        f"Establish an opening scene and deliver the call to action:"
+    )
     memory.add_player_action(start_prompt)
 
     print("Generating adventure...\n")
 
-    ##full_response = ""
-
     await Console.Console.launch_inference(model, memory, config)
-
-    ## async for fragment in await model.respond_stream(memory.get_chat_object(), config=config, on_prediction_fragment=handle_prediction_fragment):
-    ##    full_response += fragment.content
-    ## print()
-
-    ##memory.add_assistant_response(full_response)

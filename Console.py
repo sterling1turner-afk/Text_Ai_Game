@@ -5,7 +5,6 @@ import lmstudio as lms
 import msgspec
 
 import GameContext
-import GameState
 
 class Console:
     currentInferenceResults: str = ""
@@ -17,8 +16,10 @@ class Console:
     def handle_prediction_fragment(fragment: lms.LlmPredictionFragment):
         if fragment.reasoning_type == "reasoning":
             print(fragment.content, end="", file=sys.stderr)
+            ##pass
         elif fragment.reasoning_type == "reasoningEndTag":
             print()
+            ##pass
         else:
             print(fragment.content, end = "", flush=True)
             Console.currentInferenceResults += fragment.content
