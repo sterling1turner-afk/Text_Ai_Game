@@ -1,11 +1,12 @@
 import asyncio
 
-import aioconsole
 import lmstudio as lms
 from typing import Any
+import aioconsole
 
 async def main():
     async with lms.AsyncClient("127.0.0.1:1234") as client:
+
         model = await client.llm.model("google/gemma-4-e4b")
 
         print("WELCOME TO TEXT LINE ADVENTURE")
