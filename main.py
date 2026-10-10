@@ -18,7 +18,7 @@ import Console
 SYSTEM_PROMPT = """ 
 # RULES
 1. Immediately respond to the players action
-2. Provide good descriptions for actions and consequences. 
+2. Provide good descriptions for actions and consequences.
 3. Never speak, act, or make decisions on behalf of the player.
 4. Follow the "Hero's journey" structure
 5. End every turn by describing the immediate, changing situation or a new threat to the player to keep the story moving at a good pace.
@@ -41,7 +41,7 @@ async def main():
 
     async with lms.AsyncClient("127.0.0.1:1234") as client:
         model = await client.llm.model(
-            "google/gemma-4-e4b",
+            "gemma4-26b-a4b-qat-uncensored-hauhaucs-balanced-mtp",
             config={
                 "seed": 25
             }
@@ -75,7 +75,6 @@ async def main():
 
             memory.add_assistant_response(Console.Console.currentInferenceResults)
 
-            GameState.print_game_state()
 
 
 

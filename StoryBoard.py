@@ -1,4 +1,3 @@
-
 import lmstudio as lms
 
 class Storyboard:
@@ -9,11 +8,6 @@ class Storyboard:
     @staticmethod
     def get_tools() -> list[lms.ToolFunctionDef]:
         return [
-            lms.ToolFunctionDef.from_callable(
-                Storyboard.create_story_board,
-                name="createStoryBoard",
-                description="Create a new story board. With a current event. The story board should contain the current event given with the future event planned out and the past event if available. This works as a reference moving forward in the story",
-            ),
             lms.ToolFunctionDef.from_callable(
                 Storyboard.finish_story_event,
                 name="finishStoryEvent",
