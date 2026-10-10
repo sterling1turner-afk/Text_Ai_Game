@@ -30,6 +30,11 @@ def get_tools() -> list[lms.ToolFunctionDef]:
 # Variable name: JSON object
 _dict: dict = {}
 
+def print_game_state():
+    print("\n\n--- CURRENT GAME STATE ---")
+    print(json.dumps(_dict, indent=4))
+    print("--------------------------\n")
+
 def update_variable(pointer: str, data: str) -> None:
     arr: list[str] = pointer.lstrip('/').split('/')
     d: dict = _dict
