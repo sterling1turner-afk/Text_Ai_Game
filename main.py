@@ -32,7 +32,7 @@ async def main():
         )
         prediction_config: lms.LlmPredictionConfigDict = {
             "temperature": 0.9,
-            "maxTokens": False
+            ## "maxTokens":
         }
 
         await AdventureSetup.run_adventure_setup(model, memory, prediction_config)
@@ -52,7 +52,7 @@ async def main():
 
             memory.add_player_action(player_action)
 
-            print("\nStory Teller: ", end="")
+            print("\nStory Teller: \n --------------------------------------------------------------------------------------------------------------\n", end="")
 
             await Console.Console.launch_inference(model, memory, prediction_config)
 
