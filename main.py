@@ -1,5 +1,12 @@
 import asyncio
 
+import os
+
+import GameState
+
+os.environ["NO_PROXY"] = "localhost,127.0.0.1,::1"
+os.environ["no_proxy"] = "localhost,127.0.0.1,::1"
+
 import aioconsole
 import lmstudio as lms
 
@@ -40,8 +47,7 @@ async def main():
             }
         )
         prediction_config: lms.LlmPredictionConfigDict = {
-            "temperature": 0.9,
-            ## "maxTokens":
+            "temperature": 0.9
         }
 
         await AdventureSetup.run_adventure_setup(model, memory, prediction_config)
@@ -68,6 +74,8 @@ async def main():
             await Console.Console.launch_inference(model, memory, prediction_config)
 
             memory.add_assistant_response(Console.Console.currentInferenceResults)
+
+            GameState.print_game_state()
 
 
 
