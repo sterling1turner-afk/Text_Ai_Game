@@ -1,15 +1,8 @@
-# This is a sample Python script.
-import aioconsole
-from aioconsole import aprint
-
-import os
 import asyncio
 
-os.environ["NO_PROXY"] = "localhost,127.0.0.1,::1"
-os.environ["no_proxy"] = "localhost,127.0.0.1,::1"
-
+import aioconsole
 import lmstudio as lms
-
+from typing import Any
 
 async def main():
     async with lms.AsyncClient("127.0.0.1:1234") as client:
@@ -19,11 +12,15 @@ async def main():
         theme: str = await aioconsole.ainput("Enter your adventure theme: ")
         print("Generating adventure...\n")
 
-        async for fragment in await model.respond_stream(theme):
-            print(fragment.content, end="", flush=False)
+        prediction_config: Any = {
+            "temperature": 0.0,
+            "seed": 25,
+            "maxTokens": 4096
+        }
+        async for fragment in await model.respond_stream(prompt, config=prediction_config):
+            print(fragment.content, end="")
         print()
 
 
 if __name__ == "__main__":
     asyncio.run(main())
-
