@@ -28,7 +28,7 @@ async def run_adventure_setup(model: lms.AsyncLLM, memory: GameContext.GameConte
 
     ##full_response = ""
 
-    await Console.prompt_user(model, memory, config)
+    await Console.Console.launch_inference(model, memory, config)
 
     ## async for fragment in await model.respond_stream(memory.get_chat_object(), config=config, on_prediction_fragment=handle_prediction_fragment):
     ##    full_response += fragment.content
