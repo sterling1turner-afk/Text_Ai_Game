@@ -5,6 +5,7 @@ import lmstudio as lms
 import msgspec
 
 import GameContext
+import GameState
 
 class Console:
     currentInferenceResults: str = ""
