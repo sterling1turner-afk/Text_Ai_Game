@@ -3,6 +3,9 @@ import asyncio
 import lmstudio as lms
 import aioconsole
 
+from adventure_setup import run_adventure_setup
+from Game_Context import GameContext
+
 SYSTEM_PROMPT = """ 
 You are an expert Text RPG Game Master, Your tone is dark, atmospheric, and immersive
 
@@ -13,25 +16,22 @@ You are an expert Text RPG Game Master, Your tone is dark, atmospheric, and imme
 """
 
 async def main():
+    chosen_seed = 25
+    memory = GameContext(system_prompt=SYSTEM_PROMPT)
+
     async with lms.AsyncClient("127.0.0.1:1234") as client:
         model = await client.llm.model(
             "google/gemma-4-e4b",
             config={
-                "seed": 25
+                "seed": chosen_seed
             }
         )
-
-        print("WELCOME TO TEXT LINE ADVENTURE")
-        theme: str = await aioconsole.ainput("Enter your adventure theme: ")
-        print("Generating adventure...\n")
         prediction_config: lms.LlmPredictionConfigDict = {
             "temperature": 0.0,
             "maxTokens": 4096
         }
-        async for fragment in await model.respond_stream(theme, config=prediction_config):
-            print(fragment.content, end="")
-        print()
 
+        await run_adventure_setup(model, memory, prediction_config)
 
 if __name__ == "__main__":
     asyncio.run(main())
