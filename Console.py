@@ -2,26 +2,35 @@ import asyncio
 import sys
 
 import lmstudio as lms
+import msgspec
 
 import GameContext
 import GameState
 
-currentInferenceResults: str = ""
-currentInput: asyncio.Task | None = None
-currentInference: asyncio.Task | None = None
-currentLineLength: int = 0
+class Console:
+    currentInferenceResults: str = ""
+    currentInput: asyncio.Task | None = None
+    currentInference: asyncio.Task | None = None
+    currentLineLength: int = 0
 
-def handle_prediction_fragment(fragment: lms.LlmPredictionFragment, i: int):
-    if fragment.reasoning_type == "reasoning":
-        # print(fragment.content, end="", file=sys.stderr)
-        pass
-    elif fragment.reasoning_type == "reasoningEndTag":
-        # print()
-        pass
-    else:
-        print(fragment.content, end = "", flush=True)
-        sys.modules[__name__].currentInferenceResults += fragment.content
+    @staticmethod
+    def handle_prediction_fragment(fragment: lms.LlmPredictionFragment):
+        if fragment.reasoning_type == "reasoning":
+            print(fragment.content, end="", file=sys.stderr)
+        elif fragment.reasoning_type == "reasoningEndTag":
+            print()
+        else:
+            print(fragment.content, end = "", flush=True)
+            Console.currentInferenceResults += fragment.content
 
 
-async def prompt_user(model: lms.AsyncLLM, memory: GameContext.GameContext, config: lms.LlmPredictionConfigDict):
-    await model.act(memory.get_chat_object(), tools=GameState.get_tools(), config=config, on_prediction_fragment=lambda x, i: handle_prediction_fragment(x, i))
+    @staticmethod
+    async def launch_inference(model: lms.AsyncLLM, memory: GameContext.GameContext, config: lms.LlmPredictionConfigDict):
+        Console.currentInferenceResults = ""
+        try:
+            async for _ in await model.respond_stream(memory.get_chat_object(),
+                                                      config=config,
+                                                      on_prediction_fragment=lambda x: Console.handle_prediction_fragment(x)):
+                pass
+        except msgspec.ValidationError as _:
+            pass

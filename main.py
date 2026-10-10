@@ -1,25 +1,26 @@
 import asyncio
-import sys
+from os import MFD_ALLOW_SEALING
 
 import aioconsole
 import lmstudio as lms
+
 import AdventureSetup
 import GameContext
-from Console import prompt_user, currentInferenceResults
+import Console
+
 
 SYSTEM_PROMPT = """ 
 You are an expert Text RPG Game Master, Your tone is dark, atmospheric, and immersive
 
 # RULES
-1. Provide rich, 3-sentence descriptions of new locations, actions, and consequences, do not redescribe the same things you have already described or repeat the same descriptors over and over
+1. Provide rich detailed descriptions of NEW locations (not old locations that were already described in a previous response), actions, and consequences
 2. Never speak, act, or make decisions on behalf of the player.
-3. Try to follow the "Hero's journey" and maintain a story arc
-4. End every turn by explaining the immediate surroundings and presenting a situation for the player, the situation should move the story forward in some way, not just "move left or move right"
+3. Try to follow the "Hero's journey" and maintain a story arc, start the first adventure generation with a call to action
+4. End every turn by explaining the immediate surroundings and presenting an impactful situation to the player that should move the story along at a good pace
 """
 
 
 async def main():
-    module = sys.modules[__name__]
     memory = GameContext.GameContext(system_prompt=SYSTEM_PROMPT)
 
     async with lms.AsyncClient("127.0.0.1:1234") as client:
@@ -30,8 +31,8 @@ async def main():
             }
         )
         prediction_config: lms.LlmPredictionConfigDict = {
-            "temperature": 0.0,
-            "maxTokens": 4096
+            "temperature": 0.9,
+            ## "maxTokens":
         }
 
         await AdventureSetup.run_adventure_setup(model, memory, prediction_config)
@@ -47,15 +48,15 @@ async def main():
             if not player_action:
                 continue
 
-            module.currentInferenceResults = ""
+            Console.Console.currentInferenceResults = ""
 
             memory.add_player_action(player_action)
 
-            print("\nStory Teller: ", end="")
+            print("\nStory Teller: \n --------------------------------------------------------------------------------------------------------------\n", end="")
 
-            await prompt_user(model, memory, prediction_config)
+            await Console.Console.launch_inference(model, memory, prediction_config)
 
-            memory.add_assistant_response(currentInferenceResults)
+            memory.add_assistant_response(Console.Console.currentInferenceResults)
 
 
 
